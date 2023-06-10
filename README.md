@@ -3,6 +3,10 @@
 RUN 
 ```docker-compose -f .\docker-compose.yml -f .\docker-compose.override.yml up -d```
 
+IN CASE OF CHANGES
+```docker-compose -f .\docker-compose.yml -f .\docker-compose.override.yml up --build -d```
+
+
 ![Visual Studio - Docker Compose Configuration](./img/visualstudio-dockerconfiguration.png)
 
 ISSUES
