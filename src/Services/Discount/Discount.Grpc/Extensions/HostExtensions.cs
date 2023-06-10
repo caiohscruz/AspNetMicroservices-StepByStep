@@ -28,26 +28,32 @@ namespace Discount.Grpc.Extensions
                     };
 
                     command.CommandText = @"
-                        DO
-                        $$
-                        BEGIN
-                            IF NOT EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'Coupon') THEN
-                                CREATE TABLE Coupon (
-                                    Id SERIAL PRIMARY KEY,
-                                    ProductName VARCHAR(24) NOT NULL,
-                                    Description TEXT,
-                                    Amount INT
-                                );
-            
-                                INSERT INTO Coupon(ProductName, Description, Amount) 
-                                VALUES 
-                                    ('IPhone X', 'IPhone Discount', 150),
-                                    ('Samsung 10', 'Samsung Discount', 100);
-                            END IF;
-                        END
-                        $$";
+                        SELECT EXISTS (
+                            SELECT 1
+                            FROM pg_tables
+                            WHERE schemaname = 'public'
+                            AND tablename = 'coupon'
+                        )";
 
-                    command.ExecuteNonQuery();
+                    var tableExists = (bool)command.ExecuteScalar();
+
+                    if (!tableExists)
+                    {
+                        command.CommandText = @"
+                            CREATE TABLE Coupon (
+                                Id SERIAL PRIMARY KEY,
+                                ProductName VARCHAR(24) NOT NULL,
+                                Description TEXT,
+                                Amount INT
+                            );
+
+                            INSERT INTO Coupon(ProductName, Description, Amount) 
+                            VALUES 
+                                ('IPhone X', 'IPhone Discount', 150),
+                                ('Samsung 10', 'Samsung Discount', 100);";
+
+                        command.ExecuteNonQuery();
+                    }
 
                     logger.LogInformation("Migrated postresql database.");
                 }
