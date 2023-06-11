@@ -4,7 +4,7 @@ using Ordering.Application.Contracts.Persistence;
 
 namespace Ordering.Application.Features.Orders.Queries.GetOrdersList
 {
-    internal class GetOrdersListQueryHandler : IRequestHandler<GetOrdersListQuery, List<OrdersViewModel>>
+    internal class GetOrdersListQueryHandler : IRequestHandler<GetOrdersListQuery, List<OrderViewModel>>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IMapper _mapper;
@@ -15,10 +15,10 @@ namespace Ordering.Application.Features.Orders.Queries.GetOrdersList
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<List<OrdersViewModel>> Handle(GetOrdersListQuery request, CancellationToken cancellationToken)
+        public async Task<List<OrderViewModel>> Handle(GetOrdersListQuery request, CancellationToken cancellationToken)
         {
             var orders = await _orderRepository.GetOrdersByUserName(request.UserName);
-            return _mapper.Map<List<OrdersViewModel>>(orders);
+            return _mapper.Map<List<OrderViewModel>>(orders);
         }
     }
 }

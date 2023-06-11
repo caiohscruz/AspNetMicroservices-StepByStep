@@ -2,7 +2,7 @@
 
 namespace Ordering.Application.Features.Orders.Queries.GetOrdersList
 {
-    public class GetOrdersListQuery : IRequest<List<OrdersViewModel>>
+    public class GetOrdersListQuery : IRequest<List<OrderViewModel>>
     {
         public string UserName { get; }
 
