@@ -1,5 +1,7 @@
 # AspNetMicroservices-StepByStep
 
+[[_TOC_]]
+
 RUN 
 ```docker-compose -f .\docker-compose.yml -f .\docker-compose.override.yml up -d```
 
@@ -9,9 +11,25 @@ IN CASE OF CHANGES
 
 ![Visual Studio - Docker Compose Configuration](./img/visualstudio-dockerconfiguration.png)
 
-ISSUES
+## TROUBLESHOOTING
 
-## StackExchange.Redis.RedisServerException: ERR unknown command 'EVAL'
+### Docker Desktop out of memory issue
+
+Docker Desktop needs at least 4 GB to run all microservices correctly.
+
+Configure the resource in the app's Settings menu, or if you're using WSL2, add a .wslconfig file in C:\Users\<UserName>\.
+
+```
+# Settings apply across all Linux distros running on WSL 2
+[wsl2]
+
+# Limits VM memory to use no more than 4 GB, this can be set as whole numbers using GB or MB
+memory=4GB 
+```
+
+## SOME CHANGES
+
+### StackExchange.Redis.RedisServerException: ERR unknown command 'EVAL'
 
 Using StackExchange.Redis as proposed in the course, I had error on UpdateBasket method:
 
@@ -23,7 +41,7 @@ StackExchange.Redis.RedisServerException: ERR unknown command 'EVAL'
 
 To solve this, as a workaround, just to proceed with the course, I used another library to Redis connection: ServiceStack.Redis
 
-## Environmet variables declaration on docker-compose.override.yml doesn't work properly
+### Environmet variables declaration on docker-compose.override.yml doesn't work properly
 
 Instead of:
 ```
