@@ -1,6 +1,7 @@
 version: '3.4'
 
 services:
+
   catalogdb:
     container_name: catalogdb
     restart: always
@@ -36,6 +37,8 @@ services:
     ports:
       - "1434:1433"  
 
+
+
   pgadmin:
     container_name: pgadmin
     restart: always
@@ -56,6 +59,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
+
+
+
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+
 
   catalog.api:
     container_name: catalog.api
