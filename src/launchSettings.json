@@ -4,11 +4,19 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "composeLaunchAction": "LaunchBrowser",
-      "composeLaunchServiceName": "catalog.api",
-      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}/swagger",
+      "composeLaunchServiceName": "ocelotapigw",
+      "composeLaunchUrl": "{Scheme}://localhost:{ServicePort}",
       "serviceActions": {
         "catalog.api": "StartDebugging",
-        "catalogdb": "StartWithoutDebugging"
+        "catalogdb": "StartWithoutDebugging",
+        "basket.api": "StartDebugging",
+        "basketdb": "StartWithoutDebugging",
+        "discount.api": "StartDebugging",
+        "discount.grpc": "StartDebugging",
+        "discountdb": "StartWithoutDebugging",
+        "ordering.api": "StartDebugging",
+        "orderingdb": "StartWithoutDebugging",
+        "ocelotapigw": "StartWithoutDebugging"
       }
     }
   }
