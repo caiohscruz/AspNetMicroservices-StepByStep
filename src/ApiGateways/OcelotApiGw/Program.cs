@@ -22,7 +22,7 @@ namespace OcelotApiGw
             })
             .ConfigureServices(s =>
             {
-                s.AddOcelot();
+                s.AddOcelot().AddCacheManager(settings => settings.WithDictionaryHandle());
             })
             .ConfigureLogging((hostingContext, logging) =>
             {
@@ -33,6 +33,14 @@ namespace OcelotApiGw
             .UseIISIntegration()
             .Configure(app =>
             {
+                app.UseRouting();
+                app.UseEndpoints(endpoints =>
+                {
+                    endpoints.MapGet("/", async context =>
+                    {
+                        await context.Response.WriteAsync("Ocelot API Gateway");
+                    });
+                });
                 app.UseOcelot().Wait();
             })
             .Build()
