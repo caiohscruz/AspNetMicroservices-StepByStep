@@ -181,6 +181,7 @@ services:
     environment:
         - ASPNETCORE_ENVIRONMENT=Development
         - ApiSettings__GatewayAddress=http://ocelotapigw
+        - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
         - ocelotapigw
         - catalog.api
