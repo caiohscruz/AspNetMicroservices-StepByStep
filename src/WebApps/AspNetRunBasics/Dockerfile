@@ -7,6 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
 COPY ["WebApps/AspNetRunBasics/AspNetRunBasics.csproj", "WebApps/AspNetRunBasics/"]
+COPY ["BuildingBlocks/Common.Logging/Common.Logging.csproj", "BuildingBlocks/Common.Logging/"]
 RUN dotnet restore "WebApps/AspNetRunBasics/AspNetRunBasics.csproj"
 COPY . .
 WORKDIR "/src/WebApps/AspNetRunBasics"

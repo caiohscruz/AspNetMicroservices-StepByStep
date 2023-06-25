@@ -11,23 +11,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddTransient<LoggingDelegatingHandler>();
-
 #pragma warning disable CS8604 // Possible null reference argument.
 builder.Services.AddHttpClient<ICatalogService, CatalogService>(c =>
-                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:CatalogUrl"]))
-                .AddHttpMessageHandler<LoggingDelegatingHandler>();
+                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:CatalogUrl"]));
 
 builder.Services.AddHttpClient<IBasketService, BasketService>(c =>
-                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BasketUrl"]))
-                .AddHttpMessageHandler<LoggingDelegatingHandler>();
+                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:BasketUrl"]));
 
 builder.Services.AddHttpClient<IOrderService, OrderService>(c =>
-                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:OrderingUrl"]))
-                .AddHttpMessageHandler<LoggingDelegatingHandler>();
+                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:OrderingUrl"]));
 #pragma warning restore CS8604 // Possible null reference argument.
 
-builder.Host.UseSerilog(SeriLogger.Configure);
+builder.UseEnrichedSerilog();
 
 var app = builder.Build();
 

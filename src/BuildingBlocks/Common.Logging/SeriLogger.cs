@@ -4,7 +4,8 @@ using Serilog;
 using Serilog.Sinks.Elasticsearch;
 
 namespace Common.Logging
-{
+{    
+    // USING WebApplicationBuilder instead
     public static class SeriLogger
     {
         public static Action<HostBuilderContext, LoggerConfiguration> Configure =>
@@ -18,9 +19,7 @@ namespace Common.Logging
                     .WriteTo.Debug()
                     .WriteTo.Console()
                     .WriteTo.Elasticsearch(
-#pragma warning disable CS8604 // Possible null reference argument.
                         new ElasticsearchSinkOptions(new Uri(elasticUri))
-#pragma warning restore CS8604 // Possible null reference argument.
                         {
                             IndexFormat = $"applogs-{context.HostingEnvironment.ApplicationName?.ToLower().Replace(".", "-")}-{context.HostingEnvironment.EnvironmentName?.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}",
                             AutoRegisterTemplate = true,
