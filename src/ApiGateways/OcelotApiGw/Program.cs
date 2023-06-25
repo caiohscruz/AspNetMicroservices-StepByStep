@@ -1,6 +1,8 @@
+using Common.Logging;
 using Ocelot.Cache.CacheManager;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using System.Reflection;
 
 namespace OcelotApiGw
 {
@@ -8,43 +10,36 @@ namespace OcelotApiGw
     {
         public static void Main(string[] args)
         {
-            new WebHostBuilder()
-            .UseKestrel()
-            .UseContentRoot(Directory.GetCurrentDirectory())
-            .ConfigureAppConfiguration((hostingContext, config) =>
+            var builder = WebApplication.CreateBuilder(args);
+
+            // Add services to the container.
+
+            builder.Services.AddOcelot().AddCacheManager(settings => settings.WithDictionaryHandle());
+                        
+            builder.Configuration.SetBasePath(builder.Environment.ContentRootPath);
+            builder.Configuration.AddJsonFile("appsettings.json", true, true);
+            builder.Configuration.AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true);
+            builder.Configuration.AddJsonFile($"ocelot.{builder.Environment.EnvironmentName}.json", true, true);
+            builder.Configuration.AddEnvironmentVariables();
+
+            builder.UseEnrichedSerilog();
+
+            var app = builder.Build();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
             {
-                config
-                    .SetBasePath(hostingContext.HostingEnvironment.ContentRootPath)
-                    .AddJsonFile("appsettings.json", true, true)
-                    .AddJsonFile($"appsettings.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, true)
-                    .AddJsonFile($"ocelot.{hostingContext.HostingEnvironment.EnvironmentName}.json", true, true)
-                    .AddEnvironmentVariables();
-            })
-            .ConfigureServices(s =>
-            {
-                s.AddOcelot().AddCacheManager(settings => settings.WithDictionaryHandle());
-            })
-            .ConfigureLogging((hostingContext, logging) =>
-            {
-                logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                logging.AddConsole();
-                logging.AddDebug();
-            })
-            .UseIISIntegration()
-            .Configure(app =>
-            {
-                app.UseRouting();
-                app.UseEndpoints(endpoints =>
+                endpoints.MapGet("/", async context =>
                 {
-                    endpoints.MapGet("/", async context =>
-                    {
-                        await context.Response.WriteAsync("Ocelot API Gateway");
-                    });
+                    await context.Response.WriteAsync("Ocelot API Gateway");
                 });
-                app.UseOcelot().Wait();
-            })
-            .Build()
-            .Run();
+            });
+
+            app.UseOcelot().Wait();
+
+            app.Run();
+
         }
     }
 }
