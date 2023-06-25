@@ -1,42 +1,82 @@
 using AspnetRunBasics.Services;
 using Common.Logging;
+using Polly;
+using Polly.Extensions.Http;
 using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddHttpClient<ICatalogService, CatalogService>(c =>
-#pragma warning disable CS8604 // Possible null reference argument.
-                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:GatewayAddress"]));
-#pragma warning restore CS8604 // Possible null reference argument.
-
-builder.Services.AddHttpClient<IBasketService, BasketService>(c =>
-#pragma warning disable CS8604 // Possible null reference argument.
-                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:GatewayAddress"]));
-#pragma warning restore CS8604 // Possible null reference argument.
-
-builder.Services.AddHttpClient<IOrderService, OrderService>(c =>
-#pragma warning disable CS8604 // Possible null reference argument.
-                c.BaseAddress = new Uri(builder.Configuration["ApiSettings:GatewayAddress"]));
-#pragma warning restore CS8604 // Possible null reference argument.
-
-builder.Services.AddRazorPages();
-
-builder.UseEnrichedSerilog();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+internal class Program
 {
-    app.UseExceptionHandler("/Error");
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        // Add services to the container.
+        builder.Services.AddHttpClient<ICatalogService, CatalogService>(c =>
+#pragma warning disable CS8604 // Possible null reference argument.
+                        c.BaseAddress = new Uri(builder.Configuration["ApiSettings:GatewayAddress"]))
+                        .AddPolicyHandler(GetRetryPolicy())
+                        .AddPolicyHandler(GetCircuitBreakerPolicy());
+
+        builder.Services.AddHttpClient<IBasketService, BasketService>(c =>
+                        c.BaseAddress = new Uri(builder.Configuration["ApiSettings:GatewayAddress"]))
+                        .AddPolicyHandler(GetRetryPolicy())
+                        .AddPolicyHandler(GetCircuitBreakerPolicy());
+
+        builder.Services.AddHttpClient<IOrderService, OrderService>(c =>
+                        c.BaseAddress = new Uri(builder.Configuration["ApiSettings:GatewayAddress"]))
+                        .AddPolicyHandler(GetRetryPolicy())
+                        .AddPolicyHandler(GetCircuitBreakerPolicy());
+#pragma warning restore CS8604 // Possible null reference argument.
+
+        builder.Services.AddRazorPages();
+
+        builder.UseEnrichedSerilog();
+
+        var app = builder.Build();
+
+        // Configure the HTTP request pipeline.
+        if (!app.Environment.IsDevelopment())
+        {
+            app.UseExceptionHandler("/Error");
+        }
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+
+        app.MapRazorPages();
+
+        app.Run();
+    }
+
+    private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+    {
+        // In this case will wait for
+        //  2 ^ 1 = 2 seconds then
+        //  2 ^ 2 = 4 seconds then
+        //  2 ^ 3 = 8 seconds then
+        //  2 ^ 4 = 16 seconds then
+        //  2 ^ 5 = 32 seconds
+
+        return HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .WaitAndRetryAsync(
+                retryCount: 5,
+                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                onRetry: (exception, retryCount, context) =>
+                {
+                    Log.Error($"Retry {retryCount} of {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+                });
+    }
+
+    private static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+    {
+        return HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .CircuitBreakerAsync(
+                handledEventsAllowedBeforeBreaking: 5,
+                durationOfBreak: TimeSpan.FromSeconds(30)
+            );
+    }
 }
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapRazorPages();
-
-app.Run();
