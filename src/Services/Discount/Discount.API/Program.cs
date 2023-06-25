@@ -1,3 +1,4 @@
+using Common.Logging;
 using Discount.API.Extensions;
 using Discount.API.Repositories;
 
@@ -11,6 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
             
 builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
+
+builder.UseEnrichedSerilog();
 
 var app = builder.Build();
 

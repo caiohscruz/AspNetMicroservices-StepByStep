@@ -1,3 +1,4 @@
+using Common.Logging;
 using Discount.Grpc.Extensions;
 using Discount.Grpc.Mapper;
 using Discount.Grpc.Repositories;
@@ -13,6 +14,8 @@ builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 builder.Services.AddGrpc();
 
 builder.Services.RegisterAutoMapper();
+
+builder.UseEnrichedSerilog();
 
 var app = builder.Build();
 

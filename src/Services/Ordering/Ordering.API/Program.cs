@@ -1,3 +1,4 @@
+using Common.Logging;
 using EventBus.Messages.Common;
 using MassTransit;
 using Ordering.API.EventBusConsumer;
@@ -31,6 +32,8 @@ builder.Services.AddMassTransit(config =>
     });
 });
 builder.Services.AddScoped<BasketCheckoutConsumer>();
+
+builder.UseEnrichedSerilog();
 
 var app = builder.Build();
 

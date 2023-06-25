@@ -1,6 +1,7 @@
 using Catalog.API.Data;
 using Catalog.API.Models;
 using Catalog.API.Repositories;
+using Common.Logging;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,8 @@ builder.Services.AddScoped(provider => provider.GetRequiredService<IOptions<Data
 
 builder.Services.AddScoped<ICatalogContext, CatalogContext>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+builder.UseEnrichedSerilog();
 
 var app = builder.Build();
 

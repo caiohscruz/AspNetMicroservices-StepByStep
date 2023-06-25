@@ -76,6 +76,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - DatabaseSettings__ConnectionString=mongodb://catalogdb:27017
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - catalogdb
     ports:
@@ -88,6 +89,7 @@ services:
       - CacheSettings__ConnectionString=basketdb:6379
       - GrpcSettings__DiscountUrl=http://discount.grpc
       - EventBusSettings__HostAddress=amqp://guest:guest@rabbitmq:5672
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - basketdb
       - discount.grpc
@@ -99,6 +101,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - DatabaseSettings__ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - discountdb
     ports:
@@ -109,6 +112,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - DatabaseSettings__ConnectionString=Server=discountdb;Port=5432;Database=DiscountDb;User Id=admin;Password=admin1234;
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - discountdb
     ports:
@@ -120,6 +124,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__OrderingConnectionString=Server=orderingdb;Database=OrderDb;User Id=sa;Password=SwN12345678;TrustServerCertificate=true;
       - EventBusSettings__HostAddress=amqp://guest:guest@rabbitmq:5672
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - orderingdb
     ports:
@@ -130,6 +135,7 @@ services:
     container_name: ocelotapigw
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
         - catalog.api
         - basket.api
@@ -146,6 +152,7 @@ services:
       - ApiSettings__CatalogUrl=http://catalog.api
       - ApiSettings__BasketUrl=http://basket.api
       - ApiSettings__OrderingUrl=http://ordering.api
+      - ElasticConfiguration__Uri=http://elasticsearch:9200
     depends_on:
       - catalog.api
       - basket.api
