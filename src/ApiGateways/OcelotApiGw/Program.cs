@@ -28,6 +28,7 @@ namespace OcelotApiGw
 
             app.UseRouting();
 
+#pragma warning disable ASP0014 // Suggest using top level route registrations
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapGet("/", async context =>
@@ -35,6 +36,7 @@ namespace OcelotApiGw
                     await context.Response.WriteAsync("Ocelot API Gateway");
                 });
             });
+#pragma warning restore ASP0014 // Suggest using top level route registrations
 
             app.UseOcelot().Wait();
 
