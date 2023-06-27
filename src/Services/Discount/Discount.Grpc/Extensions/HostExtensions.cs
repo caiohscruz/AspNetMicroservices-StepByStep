@@ -1,13 +1,12 @@
 ﻿using Npgsql;
+using Polly;
 
 namespace Discount.Grpc.Extensions
 {
     public static class HostExtensions
     {
-        public static IHost MigrateDatabase<TContext>(this IHost host, int? retry = 0)
+        public static IHost MigrateDatabase<TContext>(this IHost host)
         {
-            int retryForAvailability = retry.Value;
-
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
@@ -18,16 +17,41 @@ namespace Discount.Grpc.Extensions
                 {
                     logger.LogInformation("Migrating postresql database.");
 
-                    using var connection = new NpgsqlConnection
-                        (configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
-                    connection.Open();
+                    var retry = Policy.Handle<NpgsqlException>()
+                            .WaitAndRetry(
+                                retryCount: 5,
+                                sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), // 2,4,8,16,32 sc
+                                onRetry: (exception, retryCount, context) =>
+                                {
+                                    logger.LogError($"Retry {retryCount} of {context.PolicyKey} at {context.OperationKey}, due to: {exception}.");
+                                });
 
-                    using var command = new NpgsqlCommand
-                    {
-                        Connection = connection
-                    };
+                    //if the postgresql server container is not created on run docker compose this
+                    //migration can't fail for network related exception. The retry options for database operations
+                    //apply to transient exceptions                    
+                    retry.Execute(() => ExecuteMigrations(configuration));
 
-                    command.CommandText = @"
+                    logger.LogInformation("Migrated postresql database.");
+                }
+                catch (NpgsqlException ex)
+                {
+                    logger.LogError(ex, "An error occurred while migrating the postresql database");                  
+                }
+            }
+
+            return host;
+        }
+        private static void ExecuteMigrations(IConfiguration configuration)
+        {
+            using var connection = new NpgsqlConnection(configuration.GetValue<string>("DatabaseSettings:ConnectionString"));
+            connection.Open();
+
+            using var command = new NpgsqlCommand
+            {
+                Connection = connection
+            };
+
+            command.CommandText = @"
                         SELECT EXISTS (
                             SELECT 1
                             FROM pg_tables
@@ -35,11 +59,11 @@ namespace Discount.Grpc.Extensions
                             AND tablename = 'coupon'
                         )";
 
-                    var tableExists = (bool)command.ExecuteScalar();
+            var tableExists = (bool)command.ExecuteScalar();
 
-                    if (!tableExists)
-                    {
-                        command.CommandText = @"
+            if (!tableExists)
+            {
+                command.CommandText = @"
                             CREATE TABLE Coupon (
                                 Id SERIAL PRIMARY KEY,
                                 ProductName VARCHAR(24) NOT NULL,
@@ -52,25 +76,8 @@ namespace Discount.Grpc.Extensions
                                 ('IPhone X', 'IPhone Discount', 150),
                                 ('Samsung 10', 'Samsung Discount', 100);";
 
-                        command.ExecuteNonQuery();
-                    }
-
-                    logger.LogInformation("Migrated postresql database.");
-                }
-                catch (NpgsqlException ex)
-                {
-                    logger.LogError(ex, "An error occurred while migrating the postresql database");
-
-                    if (retryForAvailability < 50)
-                    {
-                        retryForAvailability++;
-                        System.Threading.Thread.Sleep(2000);
-                        MigrateDatabase<TContext>(host, retryForAvailability);
-                    }
-                }
+                command.ExecuteNonQuery();
             }
-
-            return host;
         }
     }
 }
