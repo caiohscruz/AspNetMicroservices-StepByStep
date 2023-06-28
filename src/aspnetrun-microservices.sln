@@ -54,7 +54,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WebApps", "WebApps", "{C1F1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetRunBasics", "WebApps\AspNetRunBasics\AspNetRunBasics.csproj", "{C040AF3C-A7CF-49E1-9DFE-4606DE3124D8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Logging", "BuildingBlocks\Common.Logging\Common.Logging.csproj", "{BD23CDEB-CE5C-4026-B099-2D242F9416FD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common.Logging", "BuildingBlocks\Common.Logging\Common.Logging.csproj", "{BD23CDEB-CE5C-4026-B099-2D242F9416FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebStatus", "WebApps\WebStatus\WebStatus.csproj", "{3DE206A0-3A5C-4C85-A0F6-4D34EA418DB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -118,6 +120,10 @@ Global
 		{BD23CDEB-CE5C-4026-B099-2D242F9416FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD23CDEB-CE5C-4026-B099-2D242F9416FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD23CDEB-CE5C-4026-B099-2D242F9416FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DE206A0-3A5C-4C85-A0F6-4D34EA418DB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DE206A0-3A5C-4C85-A0F6-4D34EA418DB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DE206A0-3A5C-4C85-A0F6-4D34EA418DB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DE206A0-3A5C-4C85-A0F6-4D34EA418DB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -140,6 +146,7 @@ Global
 		{41257364-6B9A-45E8-9C45-5BD9D5773F74} = {A12E4987-9F46-4582-9833-52465FCCFCE2}
 		{C040AF3C-A7CF-49E1-9DFE-4606DE3124D8} = {C1F1C919-3999-4091-94CF-49B2D033425F}
 		{BD23CDEB-CE5C-4026-B099-2D242F9416FD} = {EB2BC3C1-6246-4B83-9FCA-EA9723C22B86}
+		{3DE206A0-3A5C-4C85-A0F6-4D34EA418DB1} = {C1F1C919-3999-4091-94CF-49B2D033425F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {63B90AA9-1A12-4D02-AF6C-EE8D6026B31A}
