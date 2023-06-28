@@ -70,3 +70,21 @@ catalog.api:
 ```
 
 By using __ (double underscore) in the environment variable names, Docker Compose will properly override the corresponding values in the appsettings.json file.
+
+## NEXT STEPS
+
+### Add OpenTelemetry (and do some refactorings)
+
+Reference:
+https://github.com/mansoorafzal/AspnetMicroservices/blob/main/src/BuildingBlocks/Common.Policy/PollyPolicy.cs
+
+### Add basic Blazor SPA Web Application
+
+Reference:
+https://github.com/thanhxuanhd/AspnetMicroservices/tree/main/aspnetrun-microservices/WebApps/AspnetRunBasicBlazor
+
+## Complementary material
+- https://devblogs.microsoft.com/dotnet/monitoring-and-observability-in-cloud-native-asp-net-core-apps/
+- https://devblogs.microsoft.com/dotnet/improvements-in-net-core-3-0-for-troubleshooting-and-monitoring-distributed-apps/
+- https://github.com/aspnetrun/run-devops
+- https://github.com/aspnetrun/run-aspnet-identityserver4
